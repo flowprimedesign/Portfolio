@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const isProd = process.env.NODE_ENV === "production";
 const nextConfig = {
-  basePath: isProd ? "/space-portfolio" : undefined,
-  assetPrefix: isProd ? "/space-portfolio" : undefined,
-  // Do not use `output: "export"` for Vercel deployments — leave default
-  // output so Next.js builds and serves CSS and dynamic features correctly.
+  // Keep default basePath/assetPrefix for Vercel deployments so static
+  // assets are served from the site root. If you deploy to a subpath
+  // (e.g. GitHub Pages), reintroduce `basePath` and `assetPrefix`.
   images: { unoptimized: true },
   reactStrictMode: true,
 };
