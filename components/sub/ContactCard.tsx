@@ -194,13 +194,10 @@ const ContactCard = () => {
               tabIndex={0}
               aria-hidden={!flipped}
             >
-              <video
+              <img
                 src="/blackhole.gif"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="back-video"
+                alt="Blackhole animation"
+                className="back-video object-cover w-full h-full"
               />
               <div className="back-overlay">
                 <h3 className="text-2xl font-semibold text-white">
