@@ -9,6 +9,8 @@ import {
 } from "@/utils/motion";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import Contact from "../main/Contact";
+import ContactCard from "./ContactCard";
 
 const HeroContent = () => {
   return (
@@ -24,7 +26,7 @@ const HeroContent = () => {
         >
           <SparklesIcon className="text-[#b49bff] mr-[10px] h-5 w-5" />
           <h1 className="Welcome-text text-[13px]">
-            Frontend Developer Portfolio
+            Fullstack Developer Portfolio
           </h1>
         </motion.div>
 
@@ -46,14 +48,14 @@ const HeroContent = () => {
           variants={slideInFromLeft(0.8)}
           className="text-lg text-gray-400 my-5 max-w-[600px]"
         >
-          I&apos;m a Front End Software Engineer with experience in Website,
-          Mobile, Games, and Software developent. Check out my project and
+          I&apos;m a Front End Software Engineer with Full Stack experience in
+          Website, AI, and Software Development. Check out my project and
           skills.
         </motion.p>
         <motion.a
           variants={slideInFromLeft(1)}
           href="https://shopping-cart-budget-helper.glitch.me"
-          className="py-2 button-primary text-center text-white cursor-pointer rounded-1g max-w-[200px]"
+          className="py-2 button-primary text-center text-white cursor-pointer rounded-lg max-w-[200px]"
         >
           Learn More.
         </motion.a>
@@ -61,6 +63,7 @@ const HeroContent = () => {
       <motion.div
         variants={slideInFromRight(0.8)}
         className="w-full h-full flex justify-center items-center"
+
         //className="flex flex-col gap-6 mt-6 text-6xl text-bold text-white max-w-[600px] w-auto h-auto"
       >
         {/* Website
@@ -68,12 +71,13 @@ const HeroContent = () => {
           Mobile
         </span>
         Games */}
-        <Image
-          src="/space-portfolio/mainIconsdark.svg"
+        <ContactCard />
+        {/* <Image
+          src="/mainIconsdark.svg"
           alt="work icons"
           height={650}
           width={650}
-        />
+        /> */}
       </motion.div>
     </motion.div>
   );

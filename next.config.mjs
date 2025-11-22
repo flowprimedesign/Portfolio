@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === "production";
 const nextConfig = {
-  basePath: "/space-portfolio",
-  assetPrefix: "/space-portfolio",
-  //basePath: process.env.NODE_ENV === "production" ? "/space-portfolio" : "",
-  //assetPrefix: process.env.NODE_ENV === "production" ? "/space-portfolio" : "",
+  basePath: isProd ? "/space-portfolio" : undefined,
+  assetPrefix: isProd ? "/space-portfolio" : undefined,
   output: "export", // <=== enables static exports
   images: { unoptimized: true },
   reactStrictMode: true,

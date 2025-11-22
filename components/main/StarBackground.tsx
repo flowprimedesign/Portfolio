@@ -22,10 +22,11 @@ const StarBackground = (props: any) => {
       <Points ref={ref} positions={sphere} stride={3} frustumCulled {...props}>
         <PointMaterial
           transparent
-          color="$fff"
-          size={0.002}
-          sizeAttenuation={true}
-          dethWrite={false}
+          color="#ffffff"
+          size={0.03}
+          sizeAttenuation={false}
+          depthWrite={false}
+          depthTest={false}
         />
       </Points>
     </group>
@@ -33,8 +34,11 @@ const StarBackground = (props: any) => {
 };
 
 const StarsCanvas = () => (
-  <div className="w-full h-auto fixed inset-0 z-[20]">
-    <Canvas camera={{ position: [0, 0, 1] }}>
+  <div className="w-full h-full absolute inset-0 z-[10] pointer-events-none">
+    <Canvas
+      style={{ height: "100%", width: "100%" }}
+      camera={{ position: [0, 0, 1] }}
+    >
       <Suspense fallback={null}>
         <StarBackground />
       </Suspense>

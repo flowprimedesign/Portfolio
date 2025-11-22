@@ -9,7 +9,7 @@ interface Props {
   description: string;
 }
 
-const ProjectCard = ({ src, title, description }: Props) => {
+const AiProjectCard = ({ src, title, description }: Props) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -45,4 +45,4 @@ const ProjectCard = ({ src, title, description }: Props) => {
   );
 };
 
-export default ProjectCard;
+export default AiProjectCard;

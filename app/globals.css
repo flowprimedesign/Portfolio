@@ -65,3 +65,238 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Shimmer / holo card styles (partial extract adapted for the contact card) */
+:root {
+  --mx: 50%;
+  --my: 50%;
+  --s: 1;
+  --o: 0;
+  --tx: 0px;
+  --ty: 0px;
+  --rx: 0deg;
+  --ry: 0deg;
+  --pos: 50% 50%;
+  --posx: 50%;
+  --posy: 50%;
+  --hyp: 0;
+}
+
+.card {
+  --radius: 12px;
+  position: relative;
+  z-index: calc(var(--s) * 100);
+  transform: translate3d(0, 0, 0.1px);
+  will-change: transform, visibility;
+  transform-style: preserve-3d;
+}
+
+.card__translater,
+.card__rotator {
+  display: grid;
+  perspective: 800px;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.card__translater {
+  width: 100%;
+  position: relative;
+  transform: translate3d(var(--tx), var(--ty), 0) scale(var(--s));
+  /* animate translate/scale together for smoother flip/tilt composition */
+  transition: transform 420ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.card__rotator {
+  --glow: #69d1e9;
+  transform: rotateY(var(--rx)) rotateX(var(--ry));
+  transform-style: preserve-3d;
+  box-shadow: 0px 10px 20px -5px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius);
+  outline: none;
+  /* animate rotation smoothly and keep box-shadow transitions */
+  transition: transform 420ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 0.4s ease, outline 0.2s ease;
+  overflow: hidden;
+}
+
+.card__rotator:focus {
+  box-shadow: 0 0 10px 0px var(--glow), 0 0 10px 0px var(--glow),
+    0 0 30px 0px var(--glow);
+}
+
+/* limit styling to known card parts to avoid globally changing layout */
+.card__rotator > .card__front,
+.card__rotator > .card__shine,
+.card__rotator > .card__back {
+  width: 100%;
+  grid-area: 1/1;
+  border-radius: var(--radius);
+  transform-style: preserve-3d;
+}
+
+.card__front {
+  /* Purple base layer underneath a subtle highlight so shimmer remains visible */
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.02)
+    ),
+    linear-gradient(180deg, rgba(99, 43, 255, 0.18), rgba(60, 8, 126, 0.28));
+  background-blend-mode: overlay, normal;
+  background-color: rgba(76, 0, 153, 0.45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius);
+  /* ensure front is treated as the 0deg face explicitly */
+  transform: rotateY(0deg);
+  /* backface-visibility: hidden; */
+}
+
+/* back face styling for flipped card */
+.card__back {
+  grid-area: 1/1;
+  transform: rotateY(180deg);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card__back .back-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 5;
+  /* backface-visibility: hidden; */
+}
+
+.card__back .back-overlay {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  text-align: center;
+  /* backface-visibility: hidden; */
+}
+
+/* apply flip by adding --flip variable so pointer tilt still applies */
+.card {
+  --flip: 0deg;
+}
+.card.flipped {
+  --flip: 180deg;
+}
+
+.card__rotator {
+  transform: rotateY(calc(var(--flip) + var(--rx))) rotateX(var(--ry));
+}
+
+/* when flipped make back larger / landscape-ish */
+.card.flipped .card__back {
+  width: min(600px, 95vw);
+  height: 400px;
+  aspect-ratio: 16/9;
+}
+
+.card__shine {
+  --angle: 133deg;
+  --imgsize: 500px;
+
+  --red: #f80e7b;
+  --yel: #eedf10;
+  --gre: #21e985;
+  --blu: #0dbde9;
+  --vio: #c929f1;
+
+  grid-area: 1/1;
+  z-index: 3; /* sit above the base layer so the holo is visible */
+  pointer-events: none;
+
+  background-image: repeating-linear-gradient(
+      90deg,
+      rgba(172, 30, 30, 0.657) 0%,
+      rgba(217, 180, 180, 0.551) 2%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--vio),
+      var(--blu),
+      var(--gre),
+      var(--yel),
+      var(--red),
+      var(--vio)
+    ),
+    radial-gradient(
+      farthest-corner circle at var(--mx) var(--my),
+      rgba(230, 230, 230, 0.85) 0%,
+      rgba(200, 200, 200, 0.08) 25%,
+      rgb(0, 0, 0) 90%
+    );
+
+  background-blend-mode: soft-light, screen, overlay;
+  background-position: center, center, var(--pos);
+  background-size: cover, 200% 200%, 120% 120%;
+  opacity: 0.75;
+  mix-blend-mode: overlay;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+/* When flipped we want the back face (video) to be fully visible
+   and the front/shine to be hidden so the video isn't occluded. */
+.card.flipped .card__front {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.card.flipped .card__back {
+  z-index: 6; /* bring back-face above other layers */
+}
+
+.card.flipped .card__back .back-video {
+  z-index: 5; /* ensure video sits above shine */
+}
+
+.card.flipped .card__back .back-overlay {
+  z-index: 10; /* overlay above shine */
+}
+
+/* end debug helpers */
+
+/* small hover interaction: increase shine slightly */
+.card:hover .card__shine {
+  opacity: 1;
+  transform: translateY(-6px) rotate(-2deg);
+}
+
+/* make sure the inner content sits above basic shine layers */
+.card__content {
+  position: relative;
+  z-index: 6; /* keep UI/content above the shine so text remains readable */
+}
+
+/* make the front panel slightly translucent so content is readable */
+.card__front {
+  /* keep the purple base defined earlier; add a subtle highlight on top */
+  background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(255, 255, 255, 0.01)
+    ),
+    linear-gradient(180deg, rgba(99, 43, 255, 0.08), rgba(60, 8, 126, 0.12));
+  /* keep a purple base behind the translucent highlights */
+  background-color: rgba(76, 0, 153, 0.45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius);
+}
+
+/* utility to set card rotation via inline CSS variables */
+.contact-card-wrapper {
+  display: flex;
+  justify-content: center;
+}

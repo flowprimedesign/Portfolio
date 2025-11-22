@@ -1,7 +1,7 @@
 export const Skill_data = [
   {
-    skill_name: "Html 5",
-    Image: "/html.png",
+    skill_name: "Postgre SQL",
+    Image: "/postger.png",
     width: 80,
     height: 80,
   },
@@ -30,14 +30,14 @@ export const Skill_data = [
     height: 80,
   },
   {
-    skill_name: "Redux",
-    Image: "/redux.png",
+    skill_name: "Express js",
+    Image: "/express.png",
     width: 80,
     height: 80,
   },
   {
-    skill_name: "React Query",
-    Image: "/reactquery.png",
+    skill_name: "Supabase",
+    Image: "/supabase.png",
     width: 80,
     height: 80,
   },
@@ -48,8 +48,8 @@ export const Skill_data = [
     height: 80,
   },
   {
-    skill_name: "Next js 13",
-    Image: "/next.png",
+    skill_name: "C++",
+    Image: "/cpp.png",
     width: 80,
     height: 80,
   },
@@ -60,8 +60,8 @@ export const Skill_data = [
     height: 80,
   },
   {
-    skill_name: "Stripe Payment",
-    Image: "/stripe.webp",
+    skill_name: "3js",
+    Image: "/3js.webp",
     width: 80,
     height: 80,
   },
