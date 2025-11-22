@@ -195,7 +195,7 @@ const ContactCard = () => {
               aria-hidden={!flipped}
             >
               <video
-                src="/blackhole.webm"
+                src="/blackhole.gif"
                 autoPlay
                 loop
                 muted
