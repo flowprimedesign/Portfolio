@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import GithubCard from "../sub/GithubCard";
+import { SELECTED_REPOS } from "../constants/githubRepos";
 
 type Repo = {
   id: number;
@@ -9,6 +10,7 @@ type Repo = {
   description: string | null;
   stargazers_count: number;
   language: string | null;
+  default_branch?: string;
 };
 
 export default async function Github({
@@ -38,17 +40,42 @@ export default async function Github({
 
     const user = await userRes.json();
 
-    const reposRes = await fetch(
-      `https://api.github.com/users/${username}/repos?per_page=6&sort=updated`,
-      { headers, next: { revalidate: 300 } }
-    );
+    let repos: Repo[] = [];
 
-    const repos: Repo[] = reposRes.ok ? await reposRes.json() : [];
+    if (SELECTED_REPOS && SELECTED_REPOS.length > 0) {
+      // Fetch the specific repos the user listed (limit to 6)
+      const picks = SELECTED_REPOS.slice(0, 6);
+      const fetches = await Promise.all(
+        picks.map(async (rname) => {
+          try {
+            const res = await fetch(
+              `https://api.github.com/repos/${username}/${rname}`,
+              {
+                headers,
+                next: { revalidate: 300 },
+              }
+            );
+            return res.ok ? await res.json() : null;
+          } catch (e) {
+            return null;
+          }
+        })
+      );
+      repos = fetches.filter(Boolean) as Repo[];
+    } else {
+      const reposRes = await fetch(
+        `https://api.github.com/users/${username}/repos?per_page=6&sort=updated`,
+        { headers, next: { revalidate: 300 } }
+      );
+
+      repos = reposRes.ok ? await reposRes.json() : [];
+    }
 
     // Check for a `walkthrough.gif` at the repo root (raw GitHub URL). We'll try HEAD requests in parallel.
     const gifChecks = await Promise.all(
       repos.map(async (r) => {
-        const gifUrl = `https://raw.githubusercontent.com/${username}/${r.name}/main/walkthrough.gif`;
+        const branch = (r as Repo).default_branch || "main";
+        const gifUrl = `https://raw.githubusercontent.com/${username}/${r.name}/${branch}/walkthrough.gif`;
         try {
           const res = await fetch(gifUrl, {
             method: "HEAD",
@@ -62,8 +89,8 @@ export default async function Github({
     );
 
     return (
-      <section id="github" className="py-10">
-        <h1 className="text-[40px] font-semibold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500 py-20">
+      <section id="github" className="py-6">
+        <h1 className="text-[40px] font-semibold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-500 py-8">
           Github Activity Dashboard
         </h1>
         <div className="max-w-4xl mx-auto bg-[#03001466] p-6 rounded-lg border border-[#2A0E61]">

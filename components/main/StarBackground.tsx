@@ -9,22 +9,27 @@ import * as random from "maath/random/dist/maath-random.esm";
 const StarBackground = (props: any) => {
   const ref: any = useRef();
   const [sphere] = useState(() =>
-    random.inSphere(new Float32Array(5000), { radius: 1.2 })
+    // generate a wider spread of points so the starfield appears large
+    random.inSphere(new Float32Array(5000), { radius: 4 })
   );
 
   useFrame((state, delta) => {
-    ref.current.rotation.x -= delta / 10;
-    ref.current.rotation.y -= delta / 15;
+    if (ref.current) {
+      ref.current.rotation.x -= delta / 10;
+      ref.current.rotation.y -= delta / 15;
+    }
   });
 
   return (
-    <group rotation={[0, 0, Math.PI / 4]}>
+    // scale the whole star group so points occupy more of the scene
+    <group rotation={[0, 0, Math.PI / 4]} scale={[2.5, 2.5, 2.5]}>
       <Points ref={ref} positions={sphere} stride={3} frustumCulled {...props}>
         <PointMaterial
           transparent
+          opacity={0.9}
           color="#ffffff"
-          size={0.03}
-          sizeAttenuation={false}
+          size={0.04}
+          sizeAttenuation={true}
           depthWrite={false}
           depthTest={false}
         />
@@ -34,10 +39,11 @@ const StarBackground = (props: any) => {
 };
 
 const StarsCanvas = () => (
-  <div className="w-full h-full absolute inset-0 z-[10] pointer-events-none">
+  // use fixed so the canvas covers the viewport while scrolling
+  <div className="w-full h-full fixed inset-0 z-0 pointer-events-none">
     <Canvas
       style={{ height: "100%", width: "100%" }}
-      camera={{ position: [0, 0, 1] }}
+      camera={{ position: [0, 0, 3] }}
     >
       <Suspense fallback={null}>
         <StarBackground />
