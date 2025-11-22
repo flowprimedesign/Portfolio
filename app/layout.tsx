@@ -1,4 +1,8 @@
 import Navbar from "../components/main/Navbar";
+import dynamic from "next/dynamic";
+const StarsCanvas = dynamic(() => import("../components/main/StarBackground"), {
+  ssr: false,
+});
 import type { Metadata } from "next";
 import Footer from "../components/main/Footer";
 import { Inter } from "next/font/google";
@@ -7,7 +11,9 @@ import Projects from "../components/main/Projects";
 import Skills from "../components/main/Skills";
 import Hero from "../components/main/Hero";
 import Github from "../components/main/Github";
-import Contact from "../components/main/Contact";
+const Contact = dynamic(() => import("../components/main/Contact"), {
+  ssr: false,
+});
 import BackendProjects from "../components/main/BackendProjects";
 import AiProjects from "../components/main/AiProjects";
 
@@ -28,12 +34,13 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-[#030014] overflow-y-scroll overflow-x-hidden`}
       >
+        <StarsCanvas />
         <Navbar />
 
         <Hero />
         <Github />
-        <Projects />
-        <BackendProjects />
+        {/* <Projects />
+        <BackendProjects /> */}
         <AiProjects />
         <Skills />
         {/* {children} */}
