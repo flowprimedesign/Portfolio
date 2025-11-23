@@ -20,7 +20,7 @@ import AiProjects from "../components/main/AiProjects";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FrontEnd Portfolio",
+  title: "Luis Ibarra - FullStack Dev",
   description: "This is my portfolio",
 };
 
