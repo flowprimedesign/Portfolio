@@ -13,21 +13,38 @@ const AiProjects = () => {
       </h1>
       <div className="h-full w-full flex flex-col md:flex-row gap-10 px-10">
         <AiProjectCard
-          src="/shopping-cart.png"
-          title="Interactive Applications"
-          description="A shopping cart helper: helps you stick to your budget, and save time at checkout."
-          // href="https://shopping-cart-budget-helper.glitch.me"
-        />
-        <AiProjectCard
           src="/CardImage.png"
-          title="Fun Games"
-          description="Pokemon clone style game. Find all your friends."
+          title="Computer Vision"
+          description="Pokemon style AR filter. Wear all the masks."
+          images={[
+            "/pokemesh.gif",
+            "/pokemesh1.png",
+            "/pokemesh2.png",
+            "/pokemesh3.png",
+          ]}
         />
         <AiProjectCard
           src="/SpaceWebsite.png"
-          title="Modern Websites"
+          title="Gemini AI Integration"
           description="Such as the site you are on right now"
+          images={[
+            "/plateit.gif",
+            "/plateit1.png",
+            "/plateit2.png",
+            "/plateit3.png",
+          ]}
         />
+        {/* <AiProjectCard
+          src="/shopping-cart.png"
+          title="Interactive Applications"
+          description="A shopping cart helper: helps you stick to your budget, and save time at checkout."
+          images={[
+            "/shopping-cart.png",
+            "/shopping-cart.png",
+            "/shopping-cart.png",
+            "/shopping-cart.png",
+          ]}
+        /> */}
       </div>
     </div>
   );
