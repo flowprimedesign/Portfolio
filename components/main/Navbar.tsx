@@ -19,22 +19,22 @@ const Navbar = () => {
           />
 
           <span className="font-bold ml-[10px] hidden md:block text-gray-300">
-            Luis Ibarra
+            Luis Ibarra - FullStack Dev
           </span>
         </a>
 
         <div className="w-[500px] h-full flex flex-row items-center justify-between md:mr-20">
           <div className="flex items-center justify-between w-full h-auto border border-[#7042f861] bg-[#0300145e] mr-[15px] px-[20px] py-[10px] rounded-full text-gray-200">
-            <a href="#" className="cursor-pointer nav-link">
+            <a href="#" className="cursor-pointer">
               Home
             </a>
-            <a href="#github" className="cursor-pointer nav-link">
+            <a href="#github" className="cursor-pointer">
               Github
             </a>
-            <a href="#projects" className="cursor-pointer nav-link">
+            <a href="#projects" className="cursor-pointer">
               Projects
             </a>
-            <a href="#skills" className="cursor-pointer nav-link">
+            <a href="#skills" className="cursor-pointer">
               Skills
             </a>
           </div>
