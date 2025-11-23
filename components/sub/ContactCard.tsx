@@ -200,7 +200,7 @@ const ContactCard = () => {
                 className="back-video object-cover w-full h-full"
               />
               <div className="back-overlay">
-                <h3 className="text-2xl font-semibold text-white">
+                <h3 className="text-2xl font-semibold text-purple-400">
                   Message Sent!
                 </h3>
               </div>

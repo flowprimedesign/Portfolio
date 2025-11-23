@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, KeyboardEvent } from "react";
 
 type Props = {
   repo: {
@@ -13,24 +15,79 @@ type Props = {
 };
 
 const GithubCard = ({ repo, gifUrl }: Props) => {
+  const [magnified, setMagnified] = useState(false);
+  // no timers - magnify stays until user toggles or another card magnifies
+
+  // When a card magnifies, notify others via a global CustomEvent so only one stays magnified.
+  const announceMagnify = (id: number) => {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("githubcard-magnify", { detail: id })
+      );
+    } catch (e) {
+      // ignore (server-side or unsupported)
+    }
+  };
+
+  const collapse = () => {
+    setMagnified(false); // Simplified collapse function
+  };
+
+  const toggle = () => {
+    setMagnified((s) => {
+      const next = !s;
+      if (next) {
+        // announce to others that this card is magnified
+        announceMagnify(repo.id);
+      }
+      return next;
+    });
+  };
+
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggle();
+    }
+  };
+
+  React.useEffect(() => {
+    const handler = (ev: Event) => {
+      const custom = ev as CustomEvent<number>;
+      if (!custom?.detail) return;
+      const id = custom.detail as number;
+      if (id !== repo.id) collapse();
+    };
+    window.addEventListener("githubcard-magnify", handler as EventListener);
+    return () => {
+      window.removeEventListener(
+        "githubcard-magnify",
+        handler as EventListener
+      );
+    };
+  }, [repo.id]);
+
   return (
-    <a
-      href={repo.html_url}
-      target="_blank"
-      rel="noreferrer"
-      className="p-4 bg-[#07031a] border border-[#2A0E61] rounded-md transition-all duration-300 flex flex-col md:flex-row gap-4 items-start relative group overflow-visible hover:z-20 hover:shadow-2xl hover:ring-2 hover:ring-purple-400"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={toggle}
+      onKeyDown={onKey}
+      className={`p-4 bg-[#07031a] border border-[#2A0E61] rounded-md transform transition-transform duration-300 flex flex-col md:flex-row gap-4 items-start relative overflow-visible hover:z-20 hover:shadow-2xl hover:ring-2 hover:ring-purple-400 ${
+        magnified ? "scale-125 md:scale-150 z-50" : ""
+      }`}
     >
       {/* Preview container: animate max-height to reveal more content without scaling */}
-      <div className="w-full md:w-48 rounded-md overflow-hidden border border-[#1f1333] max-h-32 group-hover:max-h-[18rem] transition-all duration-300">
+      <div className="w-full md:w-64 rounded-md overflow-hidden border border-[#1f1333] h-64">
         {gifUrl ? (
           <img
             src={gifUrl}
             alt={`${repo.name} walkthrough`}
             loading="lazy"
-            className="w-full h-auto object-cover"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-32 bg-[#050218] flex items-center justify-center text-sm text-gray-500">
+          <div className="w-full h-56 bg-[#050218] flex items-center justify-center text-sm text-gray-500">
             No preview
           </div>
         )}
@@ -50,7 +107,7 @@ const GithubCard = ({ repo, gifUrl }: Props) => {
           <div className="mt-3 text-xs text-gray-300">{repo.language}</div>
         )}
       </div>
-    </a>
+    </div>
   );
 };
 
