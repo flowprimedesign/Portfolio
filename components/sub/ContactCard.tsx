@@ -195,7 +195,7 @@ const ContactCard = () => {
               aria-hidden={!flipped}
             >
               <img
-                src="/blackhole.gif"
+                src="https://raw.githubusercontent.com/flowprimedesign/Portfolio/main/public/blackhole.gif"
                 alt="Blackhole animation"
                 className="back-video object-cover w-full h-full"
               />

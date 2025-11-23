@@ -17,21 +17,15 @@ const AiProjects = () => {
           title="Computer Vision"
           description="Pokemon style AR filter. Wear all the masks."
           images={[
-            "/pokemesh.gif",
-            "/pokemesh1.png",
-            "/pokemesh2.png",
-            "/pokemesh3.png",
+            "https://raw.githubusercontent.com/flowprimedesign/CIS25/main/final/demo.gif",
           ]}
         />
         <AiProjectCard
           src="/SpaceWebsite.png"
           title="Gemini AI Integration"
-          description="Such as the site you are on right now"
+          description="Input some ingredients, get a unique recipe from Gemini AI."
           images={[
-            "/plateit.gif",
-            "/plateit1.png",
-            "/plateit2.png",
-            "/plateit3.png",
+            "https://raw.githubusercontent.com/group33capstone/plateit/main/walkthrough.gif",
           ]}
         />
         {/* <AiProjectCard
