@@ -38,6 +38,15 @@ jobs:
         run: |
           npm run build
 
+      - name: Show build output
+        run: |
+          echo "PWD: $(pwd)"
+          echo "--- out/ contents ---"
+          ls -la out || true
+          du -sh out || true
+          echo "--- .next/ summary ---"
+          ls -la .next || true
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
