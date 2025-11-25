@@ -1,8 +1,12 @@
-//import { Socials } from ".../constants/index";
-import Image from "next/image";
+"use client";
 import React from "react";
+import usePublicImage from "../sub/usePublicImage";
 
 const Navbar = () => {
+  const { url: navUrl } = usePublicImage("NavLogo.png");
+  // Prefer DB-hosted logo, but fall back to local `/public/NavLogo.png`.
+  const logoSrc = navUrl || "/NavLogo.png";
+
   return (
     <div className="w-full h-[65px] fixed top-0 shadow-lg shadow-[#2A0E61]/50 bg-[#03001417] backdrop-blur-md z-50 px-10">
       <div className="w-full h-full flex flex-row items-center justify-between m-auto px-[10px]">
@@ -10,11 +14,14 @@ const Navbar = () => {
           href="#about-me"
           className="h-auto w-auto flex flex-row items-center"
         >
-          <Image
-            src="/NavLogo.png"
+          {/* resolve NavLogo from DB if available (DB-only) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoSrc}
             alt="logo"
             width={70}
             height={70}
+            crossOrigin="anonymous"
             className="cursor-pointer hover:animate-slowspin"
           />
 

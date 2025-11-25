@@ -7,6 +7,7 @@ import {
 } from "../constants/index";
 import React from "react";
 import SkillDataProvider from "../sub/SkillDataProvider";
+import VideoBackground from "../sub/VideoBackground";
 import SkillText from "../sub/SkillText";
 
 const Skills = () => {
@@ -76,15 +77,9 @@ const Skills = () => {
 
       <div className="w-full h-full absolute">
         <div className="w-full h-full z-[-10] opacity-30 absolute flex items-center justify-center bg-cover">
-          <video
-            className="w-full h-auto"
-            preload="false"
-            playsInline
-            loop
-            muted
-            autoPlay
-            src="/cards-video.webm"
-          />
+          {/* prefer DB-hosted video if available */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <VideoBackground />
         </div>
       </div>
     </section>

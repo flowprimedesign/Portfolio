@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import React, { useState } from "react";
+import usePublicImage from "./usePublicImage";
 
 interface Props {
   src: string;
@@ -11,6 +11,12 @@ interface Props {
 
 const ProjectCard = ({ src, title, description }: Props) => {
   const [hovered, setHovered] = useState(false);
+
+  const { url: resolved, loading } = usePublicImage(src);
+  // If public DB URL isn't available, fall back to the local public asset.
+  const imgSrc =
+    resolved ||
+    (/^https?:\/\//i.test(src) ? src : `/${src.replace(/^\/+/, "")}`);
 
   return (
     <div
@@ -22,11 +28,13 @@ const ProjectCard = ({ src, title, description }: Props) => {
       }}
       className="relative overflow-hidden rounded-lg shadow-lg border border-[#2A0E61] transition-transform duration-300 hover:shadow-2xl hover:border-4 hover:border-purple-400 group"
     >
-      <Image
-        src={src}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imgSrc}
         alt={title}
         width={1000}
         height={1000}
+        crossOrigin="anonymous"
         className="w-full object-contain transition-transform duration-300 group-hover:scale-105"
       />
 

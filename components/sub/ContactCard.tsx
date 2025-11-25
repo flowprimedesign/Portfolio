@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useCallback, useEffect, useState } from "react";
+import usePublicImage from "./usePublicImage";
 
 const ContactCard = () => {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -126,6 +127,12 @@ const ContactCard = () => {
     setFlipped(false);
   };
 
+  // Try both webm and gif DB rows (some migrations stored one or the other).
+  const { url: webmUrl } = usePublicImage("blackhole.webm");
+  const { url: gifUrl } = usePublicImage("blackhole.gif");
+  // Prefer DB-hosted URL, but fall back to local `public/` assets so the card still renders.
+  const backSrc = webmUrl || gifUrl || "/blackhole.webm";
+
   return (
     <div className="contact-card-wrapper py-6">
       <div
@@ -184,8 +191,10 @@ const ContactCard = () => {
                 </div>
               </form>
             </div>
+
             {/* shine layer */}
             <div className="card__shine" aria-hidden="true"></div>
+
             {/* back face */}
             <div
               className="card__back"
@@ -194,11 +203,38 @@ const ContactCard = () => {
               tabIndex={0}
               aria-hidden={!flipped}
             >
-              <img
-                src="https://raw.githubusercontent.com/flowprimedesign/Portfolio/main/public/blackhole.gif"
-                alt="Blackhole animation"
-                className="back-video object-cover w-full h-full"
-              />
+              {/* Render a looping video for .webm, otherwise render the image for gifs */}
+              {backSrc ? (
+                backSrc.endsWith(".webm") ? (
+                  <video
+                    src={backSrc}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      const v = e.currentTarget as HTMLVideoElement;
+                      // fall back to gif if webm fails and gif exists
+                      if (gifUrl) v.src = gifUrl;
+                    }}
+                    className="back-video object-cover w-full h-full"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={backSrc}
+                    alt="Blackhole animation"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      // if DB gif fails, no local fallback (keep DB-only behavior)
+                      img.style.display = "none";
+                    }}
+                    className="back-video object-cover w-full h-full"
+                  />
+                )
+              ) : null}
               <div className="back-overlay">
                 <h3 className="text-2xl font-semibold text-purple-400">
                   Message Sent!

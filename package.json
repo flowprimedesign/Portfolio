@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "migrate-assets": "bash ./scripts/migrate-assets.sh",
+    "dev:migrate": "concurrently \"npm:dev\" \"sleep 2 && node ./scripts/find-next-url.js | xargs -I{} bash -c 'BASE_URL={} npm run migrate-assets'\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.939.0",
+    "@aws-sdk/s3-request-presigner": "^3.939.0",
     "@heroicons/react": "^2.1.5",
     "@react-three/drei": "^9.109.5",
     "@react-three/fiber": "^8.17.5",
@@ -20,6 +24,7 @@
     "eslint-config-next": "14.2.5",
     "framer-motion": "^11.3.24",
     "next": "14.2.5",
+    "pg": "^8.16.3",
     "postcss": "^8",
     "react": "^18",
     "react-dom": "^18",
@@ -30,5 +35,8 @@
     "typescript": "^5",
     "update": "^0.7.4",
     "webpack": "^5.95.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

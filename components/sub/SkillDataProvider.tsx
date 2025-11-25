@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import Image from "next/image";
+import usePublicImage from "./usePublicImage";
 
 interface Props {
   src: string;
@@ -23,6 +23,9 @@ const SkillDataProvider = ({ src = "", width, height, index }: Props) => {
   };
 
   const animationDelay = 0.3;
+  const { url: resolved } = usePublicImage(src);
+  const imgSrc = resolved || `/${src.replace(/^\/+/, "")}`;
+
   return (
     <motion.div
       ref={ref}
@@ -32,7 +35,9 @@ const SkillDataProvider = ({ src = "", width, height, index }: Props) => {
       custom={index}
       transition={{ delay: index * animationDelay }}
     >
-      <Image src={src} width={width} height={height} alt="skill image" />
+      {/* render resolved DB URL or fall back to local public asset */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={imgSrc} width={width} height={height} alt="skill image" />
     </motion.div>
   );
 };
