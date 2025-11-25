@@ -7,6 +7,8 @@ on:
 
 jobs:
   build-and-deploy:
+    # Temporarily disabled to avoid deprecated artifact-action failures; use `deploy-gh-pages.yml` instead.
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read
