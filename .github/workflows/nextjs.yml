@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # needed to push using GITHUB_TOKEN
+  contents: write
   id-token: write
 
 jobs:
@@ -47,4 +47,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
-          # optional: publish_branch: gh-pages
+          # publish_branch: gh-pages   # optional override
