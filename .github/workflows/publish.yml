@@ -1,57 +1,76 @@
-# File: .github/workflows/publish.yml
-name: publish-to-github-pages
+name: Build, migrate and deploy to Pages
+
 on:
   push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-env:
-  NODE_ENV: production
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    env:
+      # Provide secrets here so steps can use them. Add secrets in repo Settings -> Secrets.
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      # Optional: prevent DB image lookups at build time unless you want them
+      NEXT_PUBLIC_USE_DB_IMAGES: 'false'
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
-        uses: ./.github/workflows/setup-node
-
-      - name: Setup Pages ⚙️
-        uses: actions/configure-pages@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          static_site_generator: next
+          node-version: 20
 
-      - name: Build with Next.js 🏗️
-        run: npx next build
-        env:
-          NODE_ENV: production
+      - name: Install deps
+        run: npm ci
 
-      - name: Upload artifact 📡
-        uses: actions/upload-pages-artifact@v3
+      - name: Verify DB connectivity (optional)
+        # You can test connectivity with a small node script or psql (if installed).
+        # This is a minimal node check that exits non-zero on failure.
+        run: |
+          node -e "
+          const { Client } = require('pg');
+          (async () => {
+            try {
+              const c = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+              await c.connect();
+              const r = await c.query('SELECT 1');
+              console.log('DB check ok', r.rows);
+              await c.end();
+            } catch (e) {
+              console.error('DB check failed', e.message || e);
+              process.exit(1);
+            }
+          })();"
+
+      - name: Run DB migrations (optional)
+        # If you have a migration script (e.g., npm run migrate or node scripts/run-migrations.js)
+        run: |
+          npm run migrate || echo "No migrate script or migration returned non-zero"
+
+      - name: Build and export
+        run: |
+          npm run build
+          npm run export
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
           path: ./out
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: Publish to GitHub Pages 🚀
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
