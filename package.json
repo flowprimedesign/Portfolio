@@ -7,6 +7,7 @@
     "migrate-assets": "bash ./scripts/migrate-assets.sh",
     "dev:migrate": "concurrently \"npm:dev\" \"sleep 2 && node ./scripts/find-next-url.js | xargs -I{} bash -c 'BASE_URL={} npm run migrate-assets'\"",
     "build": "NEXT_DISABLE_ESLINT_PLUGIN=true next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint"
   },

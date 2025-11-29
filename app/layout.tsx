@@ -16,6 +16,8 @@ const Contact = dynamic(() => import("../components/main/Contact"), {
 });
 import BackendProjects from "../components/main/BackendProjects";
 import AiProjects from "../components/main/AiProjects";
+import CollaborationMatch from "../components/main/CollaborationMatch";
+import LuisChat from "@/components/main/LuisChat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,13 +38,14 @@ export default function RootLayout({
       >
         <StarsCanvas />
         <Navbar />
-
         <Hero />
+        <LuisChat />
         <Github />
         {/* <Projects />
         <BackendProjects /> */}
         <AiProjects />
-        <Skills />
+        {/* <Skills /> */}
+        <CollaborationMatch />
         {/* {children} */}
         <Contact />
 
