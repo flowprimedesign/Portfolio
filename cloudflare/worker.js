@@ -7,6 +7,15 @@
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
+// Safely read secret bindings. Access via `globalThis` or `typeof` so the
+// script doesn't throw a ReferenceError if a secret isn't configured.
+const GOOGLE_API_KEY_BINDING =
+  typeof globalThis.GOOGLE_API_KEY !== "undefined"
+    ? globalThis.GOOGLE_API_KEY
+    : null;
+const PROXY_KEY_BINDING =
+  typeof globalThis.PROXY_KEY !== "undefined" ? globalThis.PROXY_KEY : null;
+
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
 });
@@ -29,11 +38,9 @@ async function handleRequest(request) {
   // Basic auth: expect a header 'x-proxy-key' matching the worker secret
   // (optional) You can enforce this to prevent public misuse.
   const proxyKey = request.headers.get("x-proxy-key");
-  if (!PROXY_KEY && !proxyKey) {
-    // If no PROXY_KEY secret is configured, allow by default (not recommended).
-    // Configure a secret in Wrangler as `PROXY_KEY` and pass it in the client.
-    // return new Response(JSON.stringify({ error: 'Missing proxy key' }), { status: 401 });
-  } else if (PROXY_KEY && proxyKey !== PROXY_KEY) {
+  if (!PROXY_KEY_BINDING && !proxyKey) {
+    // No PROXY_KEY configured; allow by default (not recommended).
+  } else if (PROXY_KEY_BINDING && proxyKey !== PROXY_KEY_BINDING) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders(request), "Content-Type": "application/json" },
@@ -47,7 +54,11 @@ async function handleRequest(request) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-goog-api-key": GOOGLE_API_KEY,
+      // Use the binding if present. If not set, the header will be omitted
+      // which will cause the Gemini API to reject the request (expected).
+      ...(GOOGLE_API_KEY_BINDING
+        ? { "X-goog-api-key": GOOGLE_API_KEY_BINDING }
+        : {}),
     },
     body,
   });
