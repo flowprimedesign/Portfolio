@@ -24,6 +24,7 @@ jobs:
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
       # Optional: prevent DB image lookups at build time unless you want them
       NEXT_PUBLIC_USE_DB_IMAGES: "false"
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
     steps:
       - name: Checkout code
