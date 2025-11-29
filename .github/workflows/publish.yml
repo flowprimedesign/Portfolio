@@ -2,7 +2,7 @@ name: Build, migrate and deploy to Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       R2_BUCKET: ${{ secrets.R2_BUCKET }}
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
       # Optional: prevent DB image lookups at build time unless you want them
-      NEXT_PUBLIC_USE_DB_IMAGES: 'false'
+      NEXT_PUBLIC_USE_DB_IMAGES: "false"
 
     steps:
       - name: Checkout code
