@@ -37,6 +37,42 @@ function getGlobalMaps() {
 
 const { cache, negativeExpiry, inFlight } = getGlobalMaps();
 
+// Manifest cache stored on window to persist across HMR and components
+const manifestKey = "__PUBLIC_IMAGE_MANIFEST__";
+function getManifestFromWindow(): Record<string, string> | null | undefined {
+  if (typeof window === "undefined") return undefined;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return window[manifestKey] as Record<string, string> | null | undefined;
+}
+
+async function loadManifestOnce(): Promise<Record<string, string> | null> {
+  if (typeof window === "undefined") return null;
+  const existing = getManifestFromWindow();
+  if (existing !== undefined) return existing || null;
+  try {
+    const res = await fetch("/r2-manifest.json", { cache: "no-store" });
+    if (!res.ok) {
+      // store negative result to avoid repeated fetches
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      window[manifestKey] = null;
+      return null;
+    }
+    const json = await res.json();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window[manifestKey] = json;
+    return json;
+  } catch (e) {
+    // on error, mark as null so we don't keep retrying aggressively
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window[manifestKey] = null;
+    return null;
+  }
+}
+
 export default function usePublicImage(filenameOrPath?: string) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,10 +89,25 @@ export default function usePublicImage(filenameOrPath?: string) {
     // Normalize: strip leading slashes
     const filename = filenameOrPath.replace(/^\/+/, "");
 
+    // Try manifest first (if available)
+    const manifestSync = getManifestFromWindow();
+    if (manifestSync && manifestSync[filename]) {
+      setUrl(manifestSync[filename]);
+      return;
+    }
+
     // Default behavior: use local `public/` assets unless explicitly enabled.
     // Set `NEXT_PUBLIC_USE_DB_IMAGES=true` to restore DB lookups.
+    // If manifest isn't already cached and we're not using DB images, kick off a background
+    // fetch for the manifest but return the local public path immediately to avoid any
+    // blocking or flicker for static sites.
     if (process.env.NEXT_PUBLIC_USE_DB_IMAGES !== "true") {
-      // Normalize and return the local public path immediately to avoid any network calls
+      // start manifest fetch in background so subsequent calls can use it
+      if (manifestSync === undefined) {
+        // fire-and-forget
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        loadManifestOnce();
+      }
       setUrl(`/${filename}`);
       return;
     }
@@ -83,6 +134,15 @@ export default function usePublicImage(filenameOrPath?: string) {
     async function fetchUrl() {
       setLoading(true);
       try {
+        // If manifest wasn't cached earlier, try to load it now (we are in DB-images mode)
+        if (getManifestFromWindow() === undefined) {
+          const m = await loadManifestOnce();
+          if (m && m[filename]) {
+            setUrl(m[filename]);
+            setLoading(false);
+            return;
+          }
+        }
         // If another render has already started the same fetch, reuse it
         if (inFlight.has(filename)) {
           const shared = await inFlight.get(filename);
